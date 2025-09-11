@@ -1,0 +1,137 @@
+<Project>
+  <Name>SoloProjekat1</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>Ship</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Comment">
+        <Text>Code: 3 slova</Text>
+        <Location left="943" top="513" />
+        <Size width="160" height="75" />
+      </Entity>
+      <Entity type="Comment">
+        <Text>Napomene:
+
+Primarna klasa: Voyage
+Pomoćne klase: Ship, Port
+Izdvojena klasa: Cruise
+Stanja primarne klase: Scheduled, OnTime, Cancelled, Delayed, Arrived (zavisno od stanja ispisivati drugačije poruke kapetana kao i pređenu kilometražu)
+
+LiveCharts2 grafikon: Angular gauge, za svako stanje
+
+Na prikazu Plovidbi (Voyages) treba dodati dugme koje će dodati i prikaz Cruise plovidbi u istom DataGridu
+
+</Text>
+        <Location left="145" top="110" />
+        <Size width="324" height="210" />
+      </Entity>
+      <Entity type="Class">
+        <Name>BaseVoyage</Name>
+        <Access>Public</Access>
+        <Location left="145" top="434" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">protected string code</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Port</Name>
+        <Access>Public</Access>
+        <Location left="764" top="452" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">string name</Member>
+        <Member type="Field">string country</Member>
+        <Member type="Field">string code</Member>
+        <Member type="Field">double latitude</Member>
+        <Member type="Field">double longitude</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Cruise</Name>
+        <Access>Public</Access>
+        <Location left="385" top="434" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">DateTime arrivalTime</Member>
+        <Member type="Field">TimeSpan duration</Member>
+        <Member type="Field">int stopsNumber</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Ship</Name>
+        <Access>Public</Access>
+        <Location left="1114" top="137" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">string name</Member>
+        <Member type="Field">int capacity</Member>
+        <Member type="Field">double lengthInMeters</Member>
+        <Member type="Field">ShipType type</Member>
+        <Member type="Field">double draftInMeters</Member>
+        <Member type="Method">public void ShipSpecs()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Comment">
+        <Text>Code: tri slova "-" 3 broja "-" 3 broja</Text>
+        <Location left="764" top="40" />
+        <Size width="160" height="75" />
+      </Entity>
+      <Entity type="Class">
+        <Name>Voyage</Name>
+        <Access>Public</Access>
+        <Location left="764" top="137" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">string code</Member>
+        <Member type="Field">DateTime arrivalTime</Member>
+        <Member type="Field">DateTime departureTime</Member>
+        <Member type="Field">string captainMessage</Member>
+        <Member type="Field">double distance</Member>
+        <Member type="Method">public void VoyageSpecs()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Generalization" first="4" second="2">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Association" first="7" second="3">
+        <Label>arrival</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>895</X>
+          <Y>386</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="7" second="3">
+        <Label>departure</Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>792</X>
+          <Y>384</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="7" second="5">
+        <Label>operates</Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>0..*</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>
