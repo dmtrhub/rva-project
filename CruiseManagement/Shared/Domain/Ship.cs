@@ -1,3 +1,5 @@
+using Shared.Enums;
+
 namespace Shared.Domain
 {
     public class Ship

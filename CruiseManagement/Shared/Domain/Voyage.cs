@@ -1,4 +1,5 @@
-﻿using Shared.Adapters;
+﻿using FluentValidation;
+using Shared.Adapters;
 using Shared.Enums;
 using Shared.States;
 using System.ComponentModel;
@@ -6,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace Shared.Domain
 {
-    public class Voyage : INotifyPropertyChanged, IVoyage
+    public class Voyage : BaseEntity, INotifyPropertyChanged, IVoyage
     {
         private string _code;
         private DateTime _arrivalTime;
