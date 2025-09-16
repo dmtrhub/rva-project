@@ -7,30 +7,28 @@ using System.Runtime.CompilerServices;
 
 namespace Shared.Domain
 {
-    public class Voyage : BaseEntity, INotifyPropertyChanged, IVoyage
+    public class Voyage : BaseEntity, IVoyage
     {
-        private string _code;
-        private DateTime _arrivalTime;
-        private DateTime _departureTime;
-        private string _captainMessage;
-        private double _distance;
-        private VoyageState _currentState;
-        private VoyageStatus _status;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public Voyage()
         {
             // Početno stanje
             TransitionTo(new ScheduledState());
         }
 
-        public string Code { get => _code; set => SetField(ref _code, value); }
-        public DateTime ArrivalTime { get => _arrivalTime; set => SetField(ref _arrivalTime, value); }
-        public DateTime DepartureTime { get => _departureTime; set => SetField(ref _departureTime, value); }
-        public string CaptainMessage { get => _captainMessage; set => SetField(ref _captainMessage, value); }
-        public double Distance { get => _distance; set => SetField(ref _distance, value); }
-        public VoyageStatus Status { get => _status; private set => SetField(ref _status, value); }
+        public string Code { get; set; }
+        public DateTime ArrivalTime { get; set; }
+        public DateTime DepartureTime { get; set; }
+        public string CaptainMessage { get; set; }
+        public double Distance { get; set; }
+        public VoyageStatus Status { get; set; }
+
+        // Add these properties:
+        public Ship Ship { get; set; }
+
+        public Port DeparturePort { get; set; }
+        public Port ArrivalPort { get; set; }
+
+        private VoyageState _currentState;
 
         public void TransitionTo(VoyageState state)
         {
@@ -57,17 +55,17 @@ namespace Shared.Domain
         public string VoyageSpecs() =>
             $"Voyage {Code} | {DepartureTime} - {ArrivalTime} | Distance: {Distance} km | Status: {Status}";
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public Voyage Clone()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            OnPropertyChanged(propertyName);
-            return true;
+            return new Voyage
+            {
+                Code = this.Code,
+                ArrivalTime = this.ArrivalTime,
+                DepartureTime = this.DepartureTime,
+                CaptainMessage = this.CaptainMessage,
+                Distance = this.Distance,
+                Status = this.Status
+            };
         }
     }
 }

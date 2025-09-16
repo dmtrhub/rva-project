@@ -47,5 +47,14 @@ namespace Shared.Contracts
 
         [OperationContract]
         bool ValidatePort(Port port);
+
+        [OperationContract]
+        List<string> GetVoyageValidationErrors(Voyage voyage);
+
+        [OperationContract]
+        List<string> GetShipValidationErrors(Ship ship);
+
+        [OperationContract]
+        List<string> GetPortValidationErrors(Port port);
     }
 }

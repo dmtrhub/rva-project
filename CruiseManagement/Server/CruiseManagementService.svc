@@ -1,0 +1,3 @@
+<%@ ServiceHost Language="C#" Debug="true" 
+    Service="Server.Services.CruiseManagementService" 
+    Factory="System.ServiceModel.Activation.DefaultServiceHostFactory" %>

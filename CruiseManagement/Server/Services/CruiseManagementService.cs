@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
-using System.Web;
 
 namespace Server.Services
 {
@@ -21,18 +20,16 @@ namespace Server.Services
         private readonly IDataPersistenceStrategy _persistenceStrategy;
         private readonly IValidatorFactory _validatorFactory;
 
-        public CruiseManagementService(IValidatorFactory validatorFactory)
+        public CruiseManagementService(IValidatorFactory validatorFactory, IDataPersistenceStrategy persistanceStrategy)
         {
             try
             {
                 Logger.Info("Initializing CruiseManagementService");
 
-                // Strategy pattern: biramo strategiju perzistencije
-                _persistenceStrategy = new XmlPersistenceStrategy("data/data.xml");
+                _persistenceStrategy = persistanceStrategy;
                 _validatorFactory = validatorFactory;
                 LoadData();
 
-                // Dodaju se početni podaci ako je prazno (3 instance Voyage kao zahtevano)
                 if (!_voyages.Any())
                 {
                     InitializeSampleData();
@@ -52,51 +49,47 @@ namespace Server.Services
         {
             Logger.Info("Initializing sample data");
 
-            // 3 instance Voyage kao što je zahtevano
-            _voyages.Add(new Voyage
-            {
-                Code = "PCB-011-381",
-                DepartureTime = DateTime.Now.AddDays(1),
-                ArrivalTime = DateTime.Now.AddDays(5),
-                CaptainMessage = "First voyage scheduled",
-                Distance = 0
-            });
-
-            _voyages.Add(new Voyage
-            {
-                Code = "DJK-321-526",
-                DepartureTime = DateTime.Now.AddDays(2),
-                ArrivalTime = DateTime.Now.AddDays(6),
-                CaptainMessage = "Second voyage prepared",
-                Distance = 0
-            });
-
-            _voyages.Add(new Voyage
-            {
-                Code = "VDV-034-245",
-                DepartureTime = DateTime.Now.AddDays(3),
-                ArrivalTime = DateTime.Now.AddDays(7),
-                CaptainMessage = "Third voyage ready",
-                Distance = 0
-            });
-
-            // Dodatni podaci
-            _ships.Add(new Ship
+            var ship1 = new Ship
             {
                 Name = "Ocean Queen",
                 Capacity = 2000,
                 Type = ShipType.Passenger,
                 LengthInMeters = 300,
                 DraftInMeters = 8.5
-            });
+            };
 
-            _ports.Add(new Port
+            var port1 = new Port
             {
                 Name = "Port of Rotterdam",
                 Country = "Netherlands",
                 Code = "ROT",
                 Latitude = 51.8850,
                 Longitude = 4.2690
+            };
+
+            var port2 = new Port
+            {
+                Name = "Port of Hamburg",
+                Country = "Germany",
+                Code = "HAM",
+                Latitude = 53.5394,
+                Longitude = 9.9872
+            };
+
+            _ships.Add(ship1);
+            _ports.Add(port1);
+            _ports.Add(port2);
+
+            _voyages.Add(new Voyage
+            {
+                Code = "PCB-011-381",
+                DepartureTime = DateTime.Now.AddDays(1),
+                ArrivalTime = DateTime.Now.AddDays(5),
+                CaptainMessage = "First voyage scheduled",
+                Distance = 0,
+                Ship = ship1,
+                DeparturePort = port1,
+                ArrivalPort = port2
             });
         }
 
@@ -168,9 +161,16 @@ namespace Server.Services
             {
                 Logger.Info($"Adding voyage: {voyage.Code}");
 
-                if (!ValidateVoyage(voyage))
+                var validator = new VoyageValidator(_voyages);
+                var result = validator.Validate(voyage);
+
+                if (!result.IsValid)
                 {
                     Logger.Warn($"Validation failed for voyage: {voyage.Code}");
+                    foreach (var error in result.Errors)
+                    {
+                        Logger.Warn($"Validation error: {error.ErrorMessage}");
+                    }
                     return false;
                 }
 
@@ -199,9 +199,17 @@ namespace Server.Services
             {
                 Logger.Info($"Updating voyage: {voyage.Code}");
 
-                if (!ValidateVoyage(voyage))
+                var otherVoyages = _voyages.Where(v => v.Code != voyage.Code).ToList();
+                var validator = new VoyageValidator(otherVoyages);
+                var result = validator.Validate(voyage);
+
+                if (!result.IsValid)
                 {
                     Logger.Warn($"Validation failed for voyage: {voyage.Code}");
+                    foreach (var error in result.Errors)
+                    {
+                        Logger.Warn($"Validation error: {error.ErrorMessage}");
+                    }
                     return false;
                 }
 
@@ -289,9 +297,16 @@ namespace Server.Services
             {
                 Logger.Info($"Adding port: {port.Name}");
 
-                if (!ValidatePort(port))
+                var validator = new PortValidator(_ports);
+                var result = validator.Validate(port);
+
+                if (!result.IsValid)
                 {
                     Logger.Warn($"Validation failed for port: {port.Name}");
+                    foreach (var error in result.Errors)
+                    {
+                        Logger.Warn($"Validation error: {error.ErrorMessage}");
+                    }
                     return false;
                 }
 

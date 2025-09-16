@@ -1,12 +1,44 @@
-﻿<Window x:Class="Client.MainWindow"
+﻿<!-- MainWindow.xaml -->
+<Window x:Class="Client.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Cruise Management System" Height="600" Width="800">
 
-    </Grid>
+    <DockPanel>
+        <!-- Toolbar za akcije -->
+        <ToolBar DockPanel.Dock="Top">
+            <Button Content="Add Voyage" Command="{Binding AddVoyageCommand}" />
+            <Button Content="Edit Voyage" Command="{Binding EditVoyageCommand}" />
+            <Button Content="Delete Voyage" Command="{Binding DeleteVoyageCommand}" />
+            <Separator />
+            <Button Content="Add Ship" Command="{Binding AddShipCommand}" />
+            <Button Content="Add Port" Command="{Binding AddPortCommand}" />
+            <Separator />
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" />
+        </ToolBar>
+
+        <!-- Search box -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="5">
+            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,5,0" />
+            <TextBox Text="{Binding SearchTerm}" Width="200" />
+            <Button Content="Search" Command="{Binding SearchCommand}" Margin="5,0,0,0" />
+        </StackPanel>
+
+        <!-- DataGrid za prikaz Voyages -->
+        <DataGrid ItemsSource="{Binding Voyages}"
+                  SelectedItem="{Binding SelectedVoyage}"
+                  AutoGenerateColumns="False" Margin="5">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="100" />
+                <DataGridTextColumn Header="Departure" Binding="{Binding DepartureTime}" Width="120" />
+                <DataGridTextColumn Header="Arrival" Binding="{Binding ArrivalTime}" Width="120" />
+                <DataGridTextColumn Header="Ship" Binding="{Binding Ship.Name}" Width="120" />
+                <DataGridTextColumn Header="From" Binding="{Binding DeparturePort.Name}" Width="120" />
+                <DataGridTextColumn Header="To" Binding="{Binding ArrivalPort.Name}" Width="120" />
+                <DataGridTextColumn Header="Distance" Binding="{Binding Distance}" Width="80" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100" />
+                <DataGridTextColumn Header="Captain Message" Binding="{Binding CaptainMessage}" Width="200" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
 </Window>

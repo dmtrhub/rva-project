@@ -7,8 +7,8 @@ namespace Shared.Persistence
 {
     public interface IDataPersistenceStrategy
     {
-        void SaveData(IEnumerable<Voyage> voyages, IEnumerable<Ship> ships, IEnumerable<Port> ports);
+        void SaveData(List<Voyage> voyages, List<Ship> ships, List<Port> ports);
 
-        (IEnumerable<Voyage>, IEnumerable<Ship>, IEnumerable<Port>) LoadData();
+        (List<Voyage>, List<Ship>, List<Port>) LoadData();
     }
 }

@@ -13,7 +13,7 @@ namespace Shared.Persistence
             _filePath = filePath;
         }
 
-        public void SaveData(IEnumerable<Voyage> voyages, IEnumerable<Ship> ships, IEnumerable<Port> ports)
+        public void SaveData(List<Voyage> voyages, List<Ship> ships, List<Port> ports)
         {
             var data = new PersistenceData { Voyages = voyages, Ships = ships, Ports = ports };
             var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
@@ -27,7 +27,7 @@ namespace Shared.Persistence
             File.WriteAllText(_filePath, json);
         }
 
-        public (IEnumerable<Voyage>, IEnumerable<Ship>, IEnumerable<Port>) LoadData()
+        public (List<Voyage>, List<Ship>, List<Port>) LoadData()
         {
             if (!File.Exists(_filePath))
                 return (new List<Voyage>(), new List<Ship>(), new List<Port>());
