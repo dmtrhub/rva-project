@@ -68,6 +68,18 @@ namespace Client.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public void UpdateFrom(Voyage source)
+        {
+            Code = source.Code;
+            DepartureTime = source.DepartureTime;
+            ArrivalTime = source.ArrivalTime;
+            CaptainMessage = source.CaptainMessage;
+            Distance = source.Distance;
+            Ship = source.Ship;
+            DeparturePort = source.DeparturePort;
+            ArrivalPort = source.ArrivalPort;
+        }
+
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

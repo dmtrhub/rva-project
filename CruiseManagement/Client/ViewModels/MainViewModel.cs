@@ -1,15 +1,18 @@
 using Shared.Domain;
+using Shared.Commands;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using Client.Services;
 using System.Windows;
+using Client.Commands;
 
 namespace Client.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly CruiseServiceProxy _service;
+        private readonly Shared.Commands.CommandManager _commandManager = new Shared.Commands.CommandManager();
 
         public ObservableCollection<VoyageViewModel> Voyages { get; set; } = new();
         public ObservableCollection<Ship> Ships { get; set; } = new();
@@ -31,13 +34,14 @@ namespace Client.ViewModels
             set { _searchTerm = value; OnPropertyChanged(nameof(SearchTerm)); SearchVoyages(); }
         }
 
-        public ICommand AddVoyageCommand { get; }
-        public ICommand EditVoyageCommand { get; }
-        public ICommand DeleteVoyageCommand { get; }
-        public ICommand SearchCommand { get; }
-        public ICommand RefreshCommand { get; }
-        public ICommand AddShipCommand { get; }
-        public ICommand AddPortCommand { get; }
+        public System.Windows.Input.ICommand AddVoyageCommand { get; }
+        public System.Windows.Input.ICommand EditVoyageCommand { get; }
+        public System.Windows.Input.ICommand DeleteVoyageCommand { get; }
+        public System.Windows.Input.ICommand SearchCommand { get; }
+        public System.Windows.Input.ICommand AddShipCommand { get; }
+        public System.Windows.Input.ICommand AddPortCommand { get; }
+        public System.Windows.Input.ICommand UndoCommand { get; }
+        public System.Windows.Input.ICommand RedoCommand { get; }
 
         public MainViewModel()
         {
@@ -47,9 +51,10 @@ namespace Client.ViewModels
             EditVoyageCommand = new RelayCommand(_ => EditVoyage(), _ => SelectedVoyage != null);
             DeleteVoyageCommand = new RelayCommand(_ => DeleteVoyage(), _ => SelectedVoyage != null);
             SearchCommand = new RelayCommand(_ => SearchVoyages());
-            RefreshCommand = new RelayCommand(_ => LoadData());
             AddShipCommand = new RelayCommand(_ => AddShip());
             AddPortCommand = new RelayCommand(_ => AddPort());
+            UndoCommand = new RelayCommand(_ => _commandManager.Undo(), _ => _commandManager.CanUndo);
+            RedoCommand = new RelayCommand(_ => _commandManager.Redo(), _ => _commandManager.CanRedo);
 
             LoadData();
         }
@@ -95,24 +100,16 @@ namespace Client.ViewModels
 
                 if (form.ShowDialog() == true)
                 {
-                    // Validacija na serveru
                     var errors = _service.GetVoyageValidationErrors(voyageVm.Model);
                     if (errors.Any())
                     {
                         MessageBox.Show(string.Join("\n", errors), "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-                    if (_service.AddVoyage(voyageVm.Model))
-                    {
-                        Voyages.Add(voyageVm);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to add voyage.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    var cmd = new AddVoyageCommand(Voyages, voyageVm, _service);
+                    _commandManager.ExecuteCommand(cmd);
                 }
 
-                // Ukloni event handlere
                 if (form.DataContext is VoyageFormViewModel formViewModelAfter)
                 {
                     formViewModelAfter.RequestAddNewShip -= ShowShipForm;
@@ -131,10 +128,10 @@ namespace Client.ViewModels
 
             try
             {
-                var voyageVm = new VoyageViewModel(SelectedVoyage.Model.Clone());
-                var form = new Views.VoyageFormWindow(voyageVm, Ships, Ports);
+                var oldVoyageVm = SelectedVoyage;
+                var newVoyageVm = new VoyageViewModel(SelectedVoyage.Model.Clone());
+                var form = new Views.VoyageFormWindow(newVoyageVm, Ships, Ports);
 
-                // Preuzmi VoyageFormViewModel i dodaj event handlere
                 if (form.DataContext is VoyageFormViewModel formViewModel)
                 {
                     formViewModel.RequestAddNewShip += ShowShipForm;
@@ -143,24 +140,17 @@ namespace Client.ViewModels
 
                 if (form.ShowDialog() == true)
                 {
-                    var errors = _service.GetVoyageValidationErrors(voyageVm.Model);
+                    var errors = _service.GetVoyageValidationErrors(newVoyageVm.Model);
                     if (errors.Any())
                     {
                         MessageBox.Show(string.Join("\n", errors), "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-                    if (_service.UpdateVoyage(voyageVm.Model))
-                    {
-                        // Osveži prikaz
-                        LoadData();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to update voyage.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    var cmd = new EditVoyageCommand(Voyages, oldVoyageVm, newVoyageVm, this, _service);
+                    _commandManager.ExecuteCommand(cmd);
+                    SelectedVoyage = newVoyageVm;
                 }
 
-                // Ukloni event handlere
                 if (form.DataContext is VoyageFormViewModel formViewModelAfter)
                 {
                     formViewModelAfter.RequestAddNewShip -= ShowShipForm;
@@ -181,14 +171,9 @@ namespace Client.ViewModels
             {
                 try
                 {
-                    if (_service.DeleteVoyage(SelectedVoyage.Code))
-                    {
-                        Voyages.Remove(SelectedVoyage);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to delete voyage.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    var cmd = new DeleteVoyageCommand(Voyages, SelectedVoyage, _service);
+                    _commandManager.ExecuteCommand(cmd);
+                    SelectedVoyage = null;
                 }
                 catch (Exception ex)
                 {

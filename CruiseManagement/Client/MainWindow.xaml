@@ -14,7 +14,8 @@
             <Button Content="Add Ship" Command="{Binding AddShipCommand}" />
             <Button Content="Add Port" Command="{Binding AddPortCommand}" />
             <Separator />
-            <Button Content="Refresh" Command="{Binding RefreshCommand}" />
+            <Button Content="Undo" Command="{Binding UndoCommand}" Margin="2" />
+            <Button Content="Redo" Command="{Binding RedoCommand}" Margin="2" />
         </ToolBar>
 
         <!-- Search box -->
