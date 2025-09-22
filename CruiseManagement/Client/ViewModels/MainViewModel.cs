@@ -42,6 +42,7 @@ namespace Client.ViewModels
         public System.Windows.Input.ICommand AddPortCommand { get; }
         public System.Windows.Input.ICommand UndoCommand { get; }
         public System.Windows.Input.ICommand RedoCommand { get; }
+        public System.Windows.Input.ICommand SimulateStateChangeCommand { get; }
 
         public MainViewModel()
         {
@@ -55,6 +56,7 @@ namespace Client.ViewModels
             AddPortCommand = new RelayCommand(_ => AddPort());
             UndoCommand = new RelayCommand(_ => _commandManager.Undo(), _ => _commandManager.CanUndo);
             RedoCommand = new RelayCommand(_ => _commandManager.Redo(), _ => _commandManager.CanRedo);
+            SimulateStateChangeCommand = new RelayCommand(param => SimulateStateChange(param as VoyageViewModel), param => param is VoyageViewModel);
 
             LoadData();
         }
@@ -270,6 +272,25 @@ namespace Client.ViewModels
         private void ShowPortForm()
         {
             AddPort();
+        }
+
+        private void SimulateStateChange(VoyageViewModel voyageVm)
+        {
+            if (voyageVm == null) return;
+
+            if (_service.SimulateStateChange(voyageVm.Code))
+            {
+                var voyages = _service.GetAllVoyages();
+                Voyages.Clear();
+                foreach (var v in voyages)
+                    Voyages.Add(new VoyageViewModel(v));
+
+                SelectedVoyage = Voyages.FirstOrDefault(x => x.Code == voyageVm.Code);
+            }
+            else
+            {
+                MessageBox.Show("Simulating doesn't work properly.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

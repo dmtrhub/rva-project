@@ -1,4 +1,5 @@
 using Shared.Domain;
+using Shared.Enums;
 using System.ComponentModel;
 
 namespace Client.ViewModels
@@ -42,7 +43,18 @@ namespace Client.ViewModels
             set { Model.Distance = value; OnPropertyChanged(nameof(Distance)); }
         }
 
-        public string Status => Model.Status.ToString();
+        public string Status
+        {
+            get => Model.Status.ToString();
+            set
+            {
+                if (Enum.TryParse<VoyageStatus>(value, out var status))
+                {
+                    Model.Status = status;
+                    OnPropertyChanged(nameof(Status));
+                }
+            }
+        }
 
         public Ship Ship
         {
@@ -78,6 +90,7 @@ namespace Client.ViewModels
             Ship = source.Ship;
             DeparturePort = source.DeparturePort;
             ArrivalPort = source.ArrivalPort;
+            OnPropertyChanged(nameof(Status));
         }
 
         protected void OnPropertyChanged(string propertyName) =>
