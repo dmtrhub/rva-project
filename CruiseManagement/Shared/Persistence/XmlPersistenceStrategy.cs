@@ -12,9 +12,9 @@ namespace Shared.Persistence
             _filePath = filePath;
         }
 
-        public void SaveData(List<Voyage> voyages, List<Ship> ships, List<Port> ports)
+        public void SaveData(List<Voyage> voyages, List<Ship> ships, List<Port> ports, List<Cruise> cruises)
         {
-            var data = new PersistenceData { Voyages = voyages, Ships = ships, Ports = ports };
+            var data = new PersistenceData { Voyages = voyages, Ships = ships, Ports = ports, Cruises = cruises };
             var serializer = new XmlSerializer(typeof(PersistenceData));
 
             var directory = Path.GetDirectoryName(_filePath);
@@ -29,16 +29,16 @@ namespace Shared.Persistence
             }
         }
 
-        public (List<Voyage>, List<Ship>, List<Port>) LoadData()
+        public (List<Voyage>, List<Ship>, List<Port>, List<Cruise>) LoadData()
         {
             if (!File.Exists(_filePath))
-                return (new List<Voyage>(), new List<Ship>(), new List<Port>());
+                return (new List<Voyage>(), new List<Ship>(), new List<Port>(), new List<Cruise>());
 
             var serializer = new XmlSerializer(typeof(PersistenceData));
             using (var reader = new StreamReader(_filePath))
             {
                 var data = (PersistenceData)serializer.Deserialize(reader);
-                return (data.Voyages, data.Ships, data.Ports);
+                return (data.Voyages, data.Ships, data.Ports, data.Cruises);
             }
         }
     }

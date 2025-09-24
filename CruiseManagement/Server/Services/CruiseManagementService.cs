@@ -1,4 +1,5 @@
-﻿using Shared.Contracts;
+﻿using log4net;
+using Shared.Contracts;
 using Shared.Domain;
 using Shared.Enums;
 using Shared.Logging;
@@ -17,8 +18,10 @@ namespace Server.Services
         private readonly List<Voyage> _voyages = new List<Voyage>();
         private readonly List<Ship> _ships = new List<Ship>();
         private readonly List<Port> _ports = new List<Port>();
+        private readonly List<Cruise> _cruises = new List<Cruise>();
         private readonly IDataPersistenceStrategy _persistenceStrategy;
         private readonly IValidatorFactory _validatorFactory;
+        private static readonly ILog log = LogManager.GetLogger(typeof(CruiseManagementService));
 
         public CruiseManagementService(IValidatorFactory validatorFactory, IDataPersistenceStrategy persistanceStrategy)
         {
@@ -91,6 +94,20 @@ namespace Server.Services
                 DeparturePort = port1,
                 ArrivalPort = port2
             });
+
+            _cruises.Add(new Cruise("CRS-001-003")
+            {
+                ArrivalTime = DateTime.Now.AddDays(3),
+                Duration = TimeSpan.FromDays(2),
+                StopsNumber = 5
+            });
+
+            _cruises.Add(new Cruise("KCZ-002-005")
+            {
+                ArrivalTime = DateTime.Now.AddDays(31),
+                Duration = TimeSpan.FromDays(4),
+                StopsNumber = 4
+            });
         }
 
         private void LoadData()
@@ -98,7 +115,7 @@ namespace Server.Services
             try
             {
                 Logger.Info("Loading data from persistence");
-                var (voyages, ships, ports) = _persistenceStrategy.LoadData();
+                var (voyages, ships, ports, cruises) = _persistenceStrategy.LoadData();
 
                 _voyages.Clear();
                 _voyages.AddRange(voyages);
@@ -108,6 +125,9 @@ namespace Server.Services
 
                 _ports.Clear();
                 _ports.AddRange(ports);
+
+                _cruises.Clear();
+                _cruises.AddRange(cruises);
 
                 Logger.Info($"Loaded {_voyages.Count} voyages, {_ships.Count} ships, {_ports.Count} ports");
             }
@@ -123,7 +143,7 @@ namespace Server.Services
             try
             {
                 Logger.Info("Saving data to persistence");
-                _persistenceStrategy.SaveData(_voyages, _ships, _ports);
+                _persistenceStrategy.SaveData(_voyages, _ships, _ports, _cruises);
                 Logger.Info("Data saved successfully");
             }
             catch (Exception ex)
@@ -422,6 +442,11 @@ namespace Server.Services
             var validator = _validatorFactory.GetPortValidator();
             var result = validator.Validate(port);
             return result.Errors.Select(e => e.ErrorMessage).ToList();
+        }
+
+        public List<Cruise> GetAllCruises()
+        {
+            return _cruises;
         }
     }
 }

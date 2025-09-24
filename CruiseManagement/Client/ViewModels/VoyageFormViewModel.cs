@@ -8,7 +8,7 @@ namespace Client.ViewModels
 {
     public class VoyageFormViewModel : INotifyPropertyChanged
     {
-        private readonly VoyageViewModel _voyage;
+        private readonly VoyageViewModel _voyageVm;
         private readonly ObservableCollection<Ship> _availableShips;
         private readonly ObservableCollection<Port> _availablePorts;
 
@@ -16,9 +16,9 @@ namespace Client.ViewModels
 
         public event Action RequestAddNewPort;
 
-        public VoyageFormViewModel(VoyageViewModel voyage, ObservableCollection<Ship> ships, ObservableCollection<Port> ports)
+        public VoyageFormViewModel(VoyageViewModel voyageVm, ObservableCollection<Ship> ships, ObservableCollection<Port> ports)
         {
-            _voyage = voyage;
+            _voyageVm = voyageVm;
             _availableShips = ships;
             _availablePorts = ports;
 
@@ -28,50 +28,93 @@ namespace Client.ViewModels
 
         public string Code
         {
-            get => _voyage.Code;
-            set { _voyage.Code = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.Code;
+            set
+            {
+                _voyageVm.Model.Code = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
         public DateTime DepartureTime
         {
-            get => _voyage.DepartureTime;
-            set { _voyage.DepartureTime = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.DepartureTime;
+            set
+            {
+                _voyageVm.Model.DepartureTime = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
         public DateTime ArrivalTime
         {
-            get => _voyage.ArrivalTime;
-            set { _voyage.ArrivalTime = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.ArrivalTime;
+            set
+            {
+                _voyageVm.Model.ArrivalTime = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
         public string CaptainMessage
         {
-            get => _voyage.CaptainMessage;
-            set { _voyage.CaptainMessage = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.CaptainMessage;
+            set
+            {
+                _voyageVm.Model.CaptainMessage = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
         public double Distance
         {
-            get => _voyage.Distance;
-            set { _voyage.Distance = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.Distance;
+            set
+            {
+                _voyageVm.Model.Distance = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
+        // ISPRAVKA: Koristi Model.Ship umesto _voyageVm.Ship (koji ne postoji)
         public Ship SelectedShip
         {
-            get => _voyage.Ship;
-            set { _voyage.Ship = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.Ship;
+            set
+            {
+                _voyageVm.Model.Ship = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
+        // ISPRAVKA: Koristi Model.DeparturePort
         public Port SelectedDeparturePort
         {
-            get => _voyage.DeparturePort;
-            set { _voyage.DeparturePort = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.DeparturePort;
+            set
+            {
+                _voyageVm.Model.DeparturePort = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
+        // ISPRAVKA: Koristi Model.ArrivalPort
         public Port SelectedArrivalPort
         {
-            get => _voyage.ArrivalPort;
-            set { _voyage.ArrivalPort = value; OnPropertyChanged(); }
+            get => _voyageVm.Model.ArrivalPort;
+            set
+            {
+                _voyageVm.Model.ArrivalPort = value;
+                OnPropertyChanged();
+                _voyageVm.RefreshAllProperties();
+            }
         }
 
         // Kolekcije za ComboBox-ove
@@ -83,6 +126,8 @@ namespace Client.ViewModels
         public ICommand AddShipCommand { get; }
 
         public ICommand AddPortCommand { get; }
+
+        public bool IsEditable => _voyageVm.Model != null;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

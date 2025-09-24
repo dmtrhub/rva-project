@@ -1,9 +1,6 @@
-﻿using FluentValidation;
-using Shared.Adapters;
+﻿using Shared.Adapters;
 using Shared.Enums;
 using Shared.States;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace Shared.Domain
 {

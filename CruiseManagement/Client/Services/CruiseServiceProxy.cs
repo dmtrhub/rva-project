@@ -29,6 +29,7 @@ namespace Client.Services
         public List<Ship> GetAllShips() => Channel.GetAllShips();
 
         public List<Port> GetAllPorts() => Channel.GetAllPorts();
+        public List<Cruise> GetAllCruises() => Channel.GetAllCruises();
 
         public bool SimulateStateChange(string voyageCode) => Channel.SimulateStateChange(voyageCode);
 

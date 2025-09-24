@@ -1,6 +1,5 @@
 using Shared.Commands;
 using Client.ViewModels;
-using Shared.Domain;
 using System.Collections.ObjectModel;
 using Client.Services;
 

@@ -1,8 +1,5 @@
 ﻿using Shared.Domain;
-using System;
-using System.Collections.Generic;
 using System.ServiceModel;
-using System.Text;
 
 namespace Shared.Contracts
 {
@@ -35,6 +32,9 @@ namespace Shared.Contracts
 
         [OperationContract]
         List<Port> GetAllPorts();
+
+        [OperationContract]
+        List<Cruise> GetAllCruises();
 
         [OperationContract]
         bool SimulateStateChange(string voyageCode);

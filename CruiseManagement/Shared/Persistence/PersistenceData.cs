@@ -1,5 +1,4 @@
 ﻿using Shared.Domain;
-using System.Xml.Serialization;
 
 namespace Shared.Persistence
 {
@@ -11,5 +10,7 @@ namespace Shared.Persistence
         public List<Ship> Ships { get; set; } = new List<Ship>();
 
         public List<Port> Ports { get; set; } = new List<Port>();
+
+        public List<Cruise> Cruises { get; set; } = new List<Cruise>();
     }
 }

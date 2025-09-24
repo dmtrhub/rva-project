@@ -14,7 +14,7 @@ namespace Shared.Persistence
             _filePath = filePath;
         }
 
-        public void SaveData(List<Voyage> voyages, List<Ship> ships, List<Port> ports)
+        public void SaveData(List<Voyage> voyages, List<Ship> ships, List<Port> ports, List<Cruise> cruises)
         {
             var directory = Path.GetDirectoryName(_filePath);
             if (!Directory.Exists(directory) && !string.IsNullOrEmpty(directory))
@@ -38,17 +38,23 @@ namespace Shared.Persistence
                 csv.WriteField("PORTS_DATA");
                 csv.NextRecord();
                 csv.WriteRecords(ports);
+
+                csv.NextRecord();
+                csv.WriteField("CRUISES_DATA");
+                csv.NextRecord();
+                csv.WriteRecords(cruises);
             }
         }
 
-        public (List<Voyage>, List<Ship>, List<Port>) LoadData()
+        public (List<Voyage>, List<Ship>, List<Port>, List<Cruise>) LoadData()
         {
             if (!File.Exists(_filePath))
-                return (new List<Voyage>(), new List<Ship>(), new List<Port>());
+                return (new List<Voyage>(), new List<Ship>(), new List<Port>(), new List<Cruise>());
 
             var voyages = new List<Voyage>();
             var ships = new List<Ship>();
             var ports = new List<Port>();
+            var cruises = new List<Cruise>();
 
             using (var reader = new StreamReader(_filePath))
             using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
@@ -60,7 +66,7 @@ namespace Shared.Persistence
                     if (csv.GetField(0) == "VOYAGES_DATA")
                     {
                         currentSection = "VOYAGES";
-                        csv.Read(); // Preskoči header liniju
+                        csv.Read(); // Preskace header liniju
                     }
                     else if (csv.GetField(0) == "SHIPS_DATA")
                     {
@@ -70,6 +76,11 @@ namespace Shared.Persistence
                     else if (csv.GetField(0) == "PORTS_DATA")
                     {
                         currentSection = "PORTS";
+                        csv.Read();
+                    }
+                    else if (csv.GetField(0) == "CRUISES_DATA")
+                    {
+                        currentSection = "CRUISES";
                         csv.Read();
                     }
                     else
@@ -87,12 +98,16 @@ namespace Shared.Persistence
                             case "PORTS":
                                 ports.Add(csv.GetRecord<Port>());
                                 break;
+
+                            case "CRUISES":
+                                cruises.Add(csv.GetRecord<Cruise>());
+                                break;
                         }
                     }
                 }
             }
 
-            return (voyages, ships, ports);
+            return (voyages, ships, ports, cruises);
         }
     }
 }

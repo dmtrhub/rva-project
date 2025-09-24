@@ -1,99 +1,67 @@
 using Shared.Domain;
-using Shared.Enums;
-using System.ComponentModel;
 
 namespace Client.ViewModels
 {
-    public class VoyageViewModel : INotifyPropertyChanged
+    public class VoyageViewModel : ViewModelBase
     {
         public Voyage Model { get; }
 
-        public VoyageViewModel(Voyage model)
+        public VoyageViewModel(Voyage voyage)
         {
-            Model = model;
-        }
-
-        public string Code
-        {
-            get => Model.Code;
-            set { Model.Code = value; OnPropertyChanged(nameof(Code)); }
-        }
-
-        public DateTime ArrivalTime
-        {
-            get => Model.ArrivalTime;
-            set { Model.ArrivalTime = value; OnPropertyChanged(nameof(ArrivalTime)); }
-        }
-
-        public DateTime DepartureTime
-        {
-            get => Model.DepartureTime;
-            set { Model.DepartureTime = value; OnPropertyChanged(nameof(DepartureTime)); }
-        }
-
-        public string CaptainMessage
-        {
-            get => Model.CaptainMessage;
-            set { Model.CaptainMessage = value; OnPropertyChanged(nameof(CaptainMessage)); }
-        }
-
-        public double Distance
-        {
-            get => Model.Distance;
-            set { Model.Distance = value; OnPropertyChanged(nameof(Distance)); }
-        }
-
-        public string Status
-        {
-            get => Model.Status.ToString();
-            set
-            {
-                if (Enum.TryParse<VoyageStatus>(value, out var status))
-                {
-                    Model.Status = status;
-                    OnPropertyChanged(nameof(Status));
-                }
-            }
+            Model = voyage;
         }
 
         public Ship Ship
         {
             get => Model.Ship;
-            set { Model.Ship = value; OnPropertyChanged(nameof(Ship)); }
+            set
+            {
+                Model.Ship = value;
+                OnPropertyChanged(nameof(ShipName));
+            }
         }
 
         public Port DeparturePort
         {
             get => Model.DeparturePort;
-            set { Model.DeparturePort = value; OnPropertyChanged(nameof(DeparturePort)); }
+            set
+            {
+                Model.DeparturePort = value;
+                OnPropertyChanged(nameof(DeparturePortName));
+            }
         }
 
         public Port ArrivalPort
         {
             get => Model.ArrivalPort;
-            set { Model.ArrivalPort = value; OnPropertyChanged(nameof(ArrivalPort)); }
+            set
+            {
+                Model.ArrivalPort = value;
+                OnPropertyChanged(nameof(ArrivalPortName));
+            }
         }
 
-        public string ShipName => Ship?.Name ?? "No ship assigned";
-        public string DeparturePortName => DeparturePort?.Name ?? "No departure port";
-        public string ArrivalPortName => ArrivalPort?.Name ?? "No arrival port";
+        public string Code => Model.Code;
+        public string Status => Model.Status.ToString();
+        public string CaptainMessage => Model.CaptainMessage;
+        public double Distance => Model.Distance;
+        public DateTime DepartureTime => Model.DepartureTime;
+        public DateTime ArrivalTime => Model.ArrivalTime;
+        public string ShipName => Model.Ship?.Name ?? "Unknown";
+        public string DeparturePortName => Model.DeparturePort?.Name ?? "Unknown";
+        public string ArrivalPortName => Model.ArrivalPort?.Name ?? "Unknown";
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void UpdateFrom(Voyage source)
+        public void RefreshAllProperties()
         {
-            Code = source.Code;
-            DepartureTime = source.DepartureTime;
-            ArrivalTime = source.ArrivalTime;
-            CaptainMessage = source.CaptainMessage;
-            Distance = source.Distance;
-            Ship = source.Ship;
-            DeparturePort = source.DeparturePort;
-            ArrivalPort = source.ArrivalPort;
+            OnPropertyChanged(nameof(Code));
             OnPropertyChanged(nameof(Status));
+            OnPropertyChanged(nameof(CaptainMessage));
+            OnPropertyChanged(nameof(Distance));
+            OnPropertyChanged(nameof(DepartureTime));
+            OnPropertyChanged(nameof(ArrivalTime));
+            OnPropertyChanged(nameof(ShipName));
+            OnPropertyChanged(nameof(DeparturePortName));
+            OnPropertyChanged(nameof(ArrivalPortName));
         }
-
-        protected void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -8,13 +8,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+	<ItemGroup>
+		<Content Include="app.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	
   <ItemGroup>
-    <Content Include="log4net.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="LiveCharts.Core" Version="0.9.8" />
-    <PackageReference Include="LiveCharts.Wpf.Core" Version="0.9.8" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc1" />
     <PackageReference Include="log4net" Version="3.2.0" />
     <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
